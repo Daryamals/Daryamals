@@ -20,9 +20,9 @@ endif
 GCOV = --coverage  
 PATH := $(PATH):$(BREW)/bin 
 
-all: clean s21_matrix.a test gcov_report style
+all: clean s21_tetris.a test gcov_report style
 
-s21_matrix.a: ${SOURCE}     
+s21_tetris.a: ${SOURCE}     
 	${CC} $(CFLAGS) ${SOURCE} -lncurses   
 	ar rcs $@ ${OBJECTS}	
 

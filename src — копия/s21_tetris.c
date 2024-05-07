@@ -1,5 +1,6 @@
 #include "s21_tetris.h"
-Figure SamplesFigure[] = {{.samples =
+
+const Figure SamplesFigure[] = {{.samples =
                                {
                                    {0, 0, 0, 0, 0},
                                    {0, 0, 0, 0, 0},
@@ -227,8 +228,8 @@ void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
 
     if (sum == COLS) {
       count++;
-      // int k;
-      for (int k = i; k >= 1; k--)
+      int k;
+      for (k = i; k >= 1; k--)
         for (int l = 0; l < COLS; l++) Table[k][l] = Table[k - 1][l];
 
       for (int l = 0; l < COLS; l++) Table[k][l] = 0;
@@ -240,8 +241,8 @@ void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
 int isRoof(Figure shape, char Table[ROWS][COLS]) {
   for (int i = 0; i < shape.width; i++) {
     for (int j = 0; j < shape.width; j++) {
-      if (shape.row + i < 0) {
-        if (shape.samples[i][j]) return TRUE;
+      if (shape.row + i < Table[0][0]) {
+        if (shape.samples[i][j]) return TRUE; 
       }
     }
   }
@@ -330,7 +331,6 @@ void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
       }
       break;
     case ' ':
-      // Pause_yes();
       *Stop = !(*Stop);
       break;
     case 'o':
@@ -366,10 +366,10 @@ int main() {
   struct timeval before, after;
   Figure CurrentFigure;
   initscr();  // для инициализации ncurses.
-  start_color();
   nodelay(stdscr, TRUE);  // функция getch() не будет блокировать выполнение
   // программы, если нет ввода от пользователя. т.е. это установка режима
   // неожидания для окна stdscr
+  start_color();
   CreateFigure(&CurrentFigure, Table, &GameOn);
   color_start();
   while (GameOn) {

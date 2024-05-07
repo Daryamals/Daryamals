@@ -1,6 +1,10 @@
 
 #include "s21_gui_tetris.h"
 
+// В файле s21_gui_tetris.c
+extern const Figure SamplesFigure[];
+
+
 void AdditionalInformation(int score, int maxScore) {
   init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
   attron(COLOR_PAIR(GREEN));
@@ -13,7 +17,7 @@ void AdditionalInformation(int score, int maxScore) {
   attroff(COLOR_PAIR(GREEN));
 }
 
-void Pause_not(int score, int maxScore) {
+void Pause_not() {
   init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
   attron(COLOR_PAIR(WHITE));
   int textX = COLS + 20;
