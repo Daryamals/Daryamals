@@ -113,26 +113,48 @@ void SaveGame(int score, int maxScore) {
   }
 }
 
+// void PrintBuffer(char buffer[ROWS][COLS], int rows, int cols) {
+//   for (int i = 0; i < rows; i++) {
+//     for (int j = 0; j < cols; j++) {
+//       printw("%c ", buffer[i][j]);
+//     }
+//     printw("\n");
+//   }
+// }
+
 void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
                 int maxScore) {
-
   char Buffer[ROWS][COLS] = {0};
+  // Это для того, чтобы обновлялась позиция фигуры
   for (int i = 0; i < CurrentFigure.width; i++) {
     for (int j = 0; j < CurrentFigure.width; j++) {
-      if (CurrentFigure.samples[i][j]){
+      if (CurrentFigure.samples[i][j]) {
         Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
             CurrentFigure.samples[i][j];
+        printf("CurrentFigure.row: %d\n", CurrentFigure.row);
+        printf("CurrentFigure.col: %d\n", CurrentFigure.col);
+        printf("i: %d\n", i);
+        printf("j: %d\n", j);
       }
     }
   }
 
+  for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLS; j++) {
+      printf("%c ", (Table[i][j] + Buffer[i][j]) ? 'O' : '.');
+    }
+    printf("\n");
+  }
+
   clear();
   refresh();
-  printf("\n0\n");
+  // printf("\n0\n");
   for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++){
+    for (int j = 0; j < COLS; j++) {
+      // printf("CurrentFigure.row: %d\n", CurrentFigure.row);
+      // printw("%c ", (Table[i][j] + Buffer[i][j]) ? 'O' : '.');
       (Table[i][j] + Buffer[i][j]) ? color_figure() : printw("%c ", '.');
-  // printf("\n1\n");
+      // printf("\n1\n");
       /////////////////////////////Здесь ошибка памяти возникает
     }
     printw("\n");
@@ -143,11 +165,11 @@ void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
 }
 
 int CheckRuleS(Figure TempFigure, char Table[ROWS][COLS]) {
-  int flag = 0;  // okv
+  int flag = 1;  // okv
 
-  if (TempFigure.row + 1 < ROWS) {
-    flag = 1;
-  }
+  // if (TempFigure.row > ROWS - 1) {
+  //   flag = 0;
+  // }
   for (int i = 0; i < TempFigure.width; i++) {
     for (int j = 0; j < TempFigure.width; j++) {
       if (Table[TempFigure.row + i + 1][TempFigure.col + j] &&
@@ -193,8 +215,8 @@ int CheckRuleW(char Table[ROWS][COLS], Figure figure) {
   int flag = 1;  // ok
   for (int i = 0; i < figure.width; i++) {
     for (int j = 0; j < figure.width; j++) {
-      if (figure.col + j <= 0 || figure.row + 1 > ROWS - 1 ||
-          figure.col + j > COLS) {
+      if (figure.col + j <= 0 || figure.row >= ROWS ||
+          figure.col + j > COLS || figure.col + j >= COLS) {
         if (figure.samples[i][j]) flag = 0;
       } else if (Table[figure.row + i + 1][figure.col + j] &&
                  figure.samples[i][j])
@@ -257,7 +279,8 @@ int isRoof(Figure shape, char Table[ROWS][COLS]) {
 
 void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn) {
   WriteToTable(CurrentFigure, Table);
-  Figure NewFigure = SamplesFigure[rand() % 7];
+  // Figure NewFigure = SamplesFigure[rand() % 7];
+  Figure NewFigure = SamplesFigure[0];
   NewFigure.row = -1;
   NewFigure.col = COLS / 4 + 1;
   *CurrentFigure = NewFigure;
@@ -332,7 +355,8 @@ void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
       }
       break;
     case 'w':
-      if (CheckRuleW(Table, Rotate(TempFigure)) && !(*Stop)) {
+      if (CheckRuleW(Table, Rotate(TempFigure)) && !(*Stop) &&
+          TempFigure.row >= 0) {
         TempFigure = Rotate(TempFigure);
       }
       break;
@@ -346,6 +370,7 @@ void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
   *CurrentFigure = TempFigure;
 
   PrintTable(Table, score, *CurrentFigure, maxScore);
+  // printf("\n4\n");
   // refresh();
 }
 

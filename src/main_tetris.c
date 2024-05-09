@@ -24,23 +24,23 @@ int main() {
     if ((action = getch()) != ERR) {
       InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
                 maxScore);
-    } 
-    else {
-      if (!Stop) {
-        gettimeofday(&after, NULL);
-        if (((double)after.tv_sec * 1000000 + (double)after.tv_usec) -
-                ((double)before.tv_sec * 1000000 + (double)before.tv_usec) >
-            500000 - level(score)) {
-          action = 's';
-          InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
-                    maxScore);
-          before = after;
-        }
-        if (action != ' ') {
-          Pause_not();
-        }
-      }
     }
+    // else {
+    //   if (!Stop) {
+    //     gettimeofday(&after, NULL);
+    //     if (((double)after.tv_sec * 1000000 + (double)after.tv_usec) -
+    //             ((double)before.tv_sec * 1000000 + (double)before.tv_usec) >
+    //         500000 - level(score)) {
+    //       action = 's';
+    //       InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
+    //                 maxScore);
+    //       before = after;
+    //     }
+    //     if (action != ' ') {
+    //       Pause_not();
+    //     }
+    //   }
+    // }
   }
   color_over();
   SaveGame(score, maxScore);

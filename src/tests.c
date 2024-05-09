@@ -123,7 +123,7 @@ START_TEST(InputUser_test_1) {
   int maxScore = 0;
   bool GameOn = true;
   int action = 's';
-printf("\nstart\n");
+  printf("\nstart\n");
   // CreateFigure(&CurrentFigure, Table, &GameOn);
   //   CurrentFigure.row = 0;
   //   CurrentFigure.col = 4;
@@ -134,7 +134,6 @@ printf("\nstart\n");
   // Check if the figure has moved one cell to the right
   ck_assert_int_eq(CurrentFigure.row, end_row);
 }
-
 
 // START_TEST(InputUser_test_1) {
 //   int action = 'd';
