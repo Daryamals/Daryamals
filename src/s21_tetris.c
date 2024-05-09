@@ -169,7 +169,7 @@ int CheckRuleS(Figure TempFigure, char Table[ROWS][COLS]) {
 
   // if (TempFigure.row > ROWS - 1) {
   //   flag = 0;
-  // }
+  // } 
   for (int i = 0; i < TempFigure.width; i++) {
     for (int j = 0; j < TempFigure.width; j++) {
       if (Table[TempFigure.row + i + 1][TempFigure.col + j] &&
@@ -269,7 +269,7 @@ void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
 int isRoof(Figure shape, char Table[ROWS][COLS]) {
   for (int i = 0; i < shape.width; i++) {
     for (int j = 0; j < shape.width; j++) {
-      if (shape.row + i < Table[0][0]) {
+      if (shape.row + i <= 0) {
         if (shape.samples[i][j]) return TRUE;
       }
     }
@@ -284,8 +284,9 @@ void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn) {
   NewFigure.row = -1;
   NewFigure.col = COLS / 4 + 1;
   *CurrentFigure = NewFigure;
-  if (isRoof(*CurrentFigure, Table)) {
-    (*GameOn) = FALSE;
+  (*GameOn) = false;
+  if (!isRoof(*CurrentFigure, Table)) {
+    (*GameOn) = true;
   }
 }
 
