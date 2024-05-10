@@ -30,7 +30,7 @@ int CheckRuleW(char Table[ROWS][COLS], Figure figure);
 void WriteToTable(Figure *CurrentFigure, char Table[ROWS][COLS]);
 Figure Rotate(Figure TempFigure);
 void DeleteString(char Table[ROWS][COLS], int *score);  // checks lines
-int isRoof(Figure shape, char Table[ROWS][COLS]);
+int isRoof(Figure shape);
 void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn);
 void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
                char Table[ROWS][COLS], int *score, int *Stop, int maxScore);

@@ -48,3 +48,33 @@ int main() {
   endwin();
   return 0;
 }
+
+// void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
+//                 int maxScore) {
+//   char Buffer[ROWS][COLS] = {0};
+//   // Это для того, чтобы обновлялась позиция фигуры
+//   for (int i = 0; i < CurrentFigure.width; i++) {
+//     for (int j = 0; j < CurrentFigure.width; j++) {
+//       if (CurrentFigure.samples[i][j]) {
+//         Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
+//             CurrentFigure.samples[i][j];
+//       }
+//     }
+//   }
+
+//   clear();
+//   refresh();
+
+//   for (int i = 0; i < ROWS; i++) {
+//     for (int j = 0; j < COLS; j++) {
+//       if (Table[i][j] + Buffer[i][j]) {
+//         printw("0");
+//       } else
+//         printw(".");
+//     }
+//     printf("\n");
+//   }
+
+//   maxScore = maxScore + 1;
+//   *score = 9;
+// }

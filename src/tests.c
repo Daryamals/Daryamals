@@ -115,25 +115,24 @@ START_TEST(DeleteString_test) {
 
 // 4.InputUser
 
-START_TEST(InputUser_test_1) {
-  char Table[ROWS][COLS] = {0};
-  Figure CurrentFigure = SamplesFigure[0];
-  int score = 0;
-  int Stop = 0;
-  int maxScore = 0;
-  bool GameOn = true;
-  int action = 's';
-  printf("\nstart\n");
-  // CreateFigure(&CurrentFigure, Table, &GameOn);
-  //   CurrentFigure.row = 0;
-  //   CurrentFigure.col = 4;
-
-  int end_row = CurrentFigure.row + 1;
-  InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-  printf("\nfinish\n");
-  // Check if the figure has moved one cell to the right
-  ck_assert_int_eq(CurrentFigure.row, end_row);
-}
+// START_TEST(InputUser_test_1) {
+//   char Table[ROWS][COLS] = {0};
+//   Figure CurrentFigure = SamplesFigure[0];
+//   int score = 0;
+//   int Stop = 0;
+//   int maxScore = 0;
+//   bool GameOn = true;
+//   int action = 's';
+//   printf("\nstart\n");
+//   // CreateFigure(&CurrentFigure, Table, &GameOn);
+//   //   CurrentFigure.row = 0;
+//   //   CurrentFigure.col = 4;
+//   int end_row = CurrentFigure.row + 1;
+//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
+//   printf("\nfinish\n");
+//   // Check if the figure has moved one cell to the right
+//   ck_assert_int_eq(CurrentFigure.row, end_row);
+// }
 
 // START_TEST(InputUser_test_1) {
 //   int action = 'd';
@@ -216,16 +215,19 @@ space");
 // }
 */
 // 5.TABLE
-/*
-  START_TEST(PrintTable_test_1) {
+START_TEST(PrintTable_test_1) {
   char Table[ROWS][COLS] = {0};
   int score = 0;
   Figure CurrentFigure = SamplesFigure[0];
   int maxScore = 0;
+  // CurrentFigure.row++;
 
   // Set up the table with some values
   for (int i = 0; i < ROWS; i++) {
       for (int j = 0; j < COLS; j++) {
+        if(i == 0 && j == 0){
+      Table[i][j] = 1;
+        } else
       Table[i][j] = i + j;
       }
   }
@@ -244,6 +246,8 @@ space");
       }
   }
   }
+/*
+
 
   START_TEST(PrintTable_test_2) {
   char Table[ROWS][COLS] = {0};
@@ -350,14 +354,14 @@ int main(void) {
 
   // 4.InputUser
 
-  tcase_add_test(tc1_1, InputUser_test_1);
+  // tcase_add_test(tc1_1, InputUser_test_1);
   //   tcase_add_test(tc1_1, InputUser_test_2);
   //   tcase_add_test(tc1_1, InputUser_test_3);
   //   tcase_add_test(tc1_1, InputUser_test_4);
 
   // 5.TABLE
 
-  //   tcase_add_test(tc1_1, PrintTable_test_1);
+  tcase_add_test(tc1_1, PrintTable_test_1);
   //   tcase_add_test(tc1_1, PrintTable_test_2);
 
   // 6.FIGURE

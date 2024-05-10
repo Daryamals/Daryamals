@@ -122,29 +122,29 @@ void SaveGame(int score, int maxScore) {
 //   }
 // }
 
+void UpdatePosition( char Buffer[ROWS][COLS], Figure CurrentFigure){
+  for (int i = 0; i < CurrentFigure.width; i++) {
+      for (int j = 0; j < CurrentFigure.width; j++) {
+        if (CurrentFigure.samples[i][j] && CurrentFigure.row + i < 20 && CurrentFigure.col + j < 10) {
+          Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
+              CurrentFigure.samples[i][j];
+        }
+      }
+    }
+}
+
 void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
                 int maxScore) {
   char Buffer[ROWS][COLS] = {0};
   // Это для того, чтобы обновлялась позиция фигуры
-  for (int i = 0; i < CurrentFigure.width; i++) {
-    for (int j = 0; j < CurrentFigure.width; j++) {
-      if (CurrentFigure.samples[i][j]) {
-        Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
-            CurrentFigure.samples[i][j];
-        printf("CurrentFigure.row: %d\n", CurrentFigure.row);
-        printf("CurrentFigure.col: %d\n", CurrentFigure.col);
-        printf("i: %d\n", i);
-        printf("j: %d\n", j);
-      }
-    }
-  }
+  UpdatePosition(Buffer, CurrentFigure);
 
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
-      printf("%c ", (Table[i][j] + Buffer[i][j]) ? 'O' : '.');
-    }
-    printf("\n");
-  }
+  // for (int i = 0; i < ROWS; i++) {
+  //   for (int j = 0; j < COLS; j++) {
+  //     printf("%c ", (Table[i][j] + Buffer[i][j]) ? '.' : '0');
+  //   }
+  //   printf("\n");
+  // }
 
   clear();
   refresh();
@@ -152,24 +152,28 @@ void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
   for (int i = 0; i < ROWS; i++) {
     for (int j = 0; j < COLS; j++) {
       // printf("CurrentFigure.row: %d\n", CurrentFigure.row);
-      // printw("%c ", (Table[i][j] + Buffer[i][j]) ? 'O' : '.');
-      (Table[i][j] + Buffer[i][j]) ? color_figure() : printw("%c ", '.');
+
+      printw("%c ", (Table[i][j] + Buffer[i][j]) ? '.' : '0');
+      // (Table[i][j] + Buffer[i][j]) ? color_figure() : printw("%c ", '.');
       // printf("\n1\n");
       /////////////////////////////Здесь ошибка памяти возникает
     }
     printw("\n");
   }
+
+    // printf("0\n");
   AdditionalInformation(*score, maxScore);
 
   refresh();
 }
+
 
 int CheckRuleS(Figure TempFigure, char Table[ROWS][COLS]) {
   int flag = 1;  // okv
 
   // if (TempFigure.row > ROWS - 1) {
   //   flag = 0;
-  // } 
+  // }
   for (int i = 0; i < TempFigure.width; i++) {
     for (int j = 0; j < TempFigure.width; j++) {
       if (Table[TempFigure.row + i + 1][TempFigure.col + j] &&
@@ -215,8 +219,8 @@ int CheckRuleW(char Table[ROWS][COLS], Figure figure) {
   int flag = 1;  // ok
   for (int i = 0; i < figure.width; i++) {
     for (int j = 0; j < figure.width; j++) {
-      if (figure.col + j <= 0 || figure.row >= ROWS ||
-          figure.col + j > COLS || figure.col + j >= COLS) {
+      if (figure.col + j <= 0 || figure.row >= ROWS || figure.col + j > COLS ||
+          figure.col + j >= COLS) {
         if (figure.samples[i][j]) flag = 0;
       } else if (Table[figure.row + i + 1][figure.col + j] &&
                  figure.samples[i][j])
@@ -266,7 +270,7 @@ void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
   }
 }
 
-int isRoof(Figure shape, char Table[ROWS][COLS]) {
+int isRoof(Figure shape) {
   for (int i = 0; i < shape.width; i++) {
     for (int j = 0; j < shape.width; j++) {
       if (shape.row + i <= 0) {
@@ -285,80 +289,41 @@ void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn) {
   NewFigure.col = COLS / 4 + 1;
   *CurrentFigure = NewFigure;
   (*GameOn) = false;
-  if (!isRoof(*CurrentFigure, Table)) {
+  if (!isRoof(*CurrentFigure)) {
     (*GameOn) = true;
   }
 }
 
-/*
-int CheckCollision(Figure figure, int rowOffset, int colOffset,
-                   char Table[ROWS][COLS]) {
-  int flag = 1;  // ok
-      int minRow = 0;
-      int maxRow = 0;
-      int minCol = 0;
-      int maxCol = 0;
-
-  for (int i = 0; i < figure.width; i++) {
-    for (int j = 0; j < figure.width; j++) {
-      minRow = figure.row + Table[i][j];
-      maxRow = Table[i][j] + figure.width;
-      minCol = figure.col + Table[i][j];
-      maxCol = Table[i][j] + figure.width;
-    }
-  }
-
-  if (maxRow > ROWS || minRow < 0 || maxCol > COLS || minCol < 0) {
-    return 0;
-  }
-
-  for (int i = 0; i < figure.width; i++) {
-    for (int j = 0; j < figure.width; j++) {
-      if (figure.samples[i][j] && Table[minRow + i][minCol + j]) {
-        flag = 0;
-        break;
-      }
-    }
-    if (!flag) {
-      break;
-    }
-  }
-
-  return flag;
-}*/
-
-void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
-               char Table[ROWS][COLS], int *score, int *Stop, int maxScore) {
-  Figure TempFigure = *CurrentFigure;
-
+void CheckPosition(int action, bool *GameOn, Figure *CurrentFigure,
+               char Table[ROWS][COLS], int *score, int *Stop, int maxScore, Figure *TempFigure){
   switch (action) {
     case 's':
       if (!(*Stop)) {
-        TempFigure = *CurrentFigure;
+        *TempFigure = *CurrentFigure;
 
-        if (CheckRuleS(TempFigure, Table)) {
-          TempFigure.row++;
+        if (CheckRuleS(*TempFigure, Table)) {
+          TempFigure->row++;
         } else {
           CreateFigure(CurrentFigure, Table, GameOn);
           DeleteString(Table, score);
-          TempFigure = *CurrentFigure;
+          *TempFigure = *CurrentFigure;
         }
       }
       break;
     case 'd':
-      if (CheckRuleD(Table, TempFigure) && !(*Stop)) {
-        TempFigure.col++;
+      if (CheckRuleD(Table, *TempFigure) && !(*Stop)) {
+        TempFigure->col++;
       }
       break;
     case 'a':
-      if (CheckRuleA(Table, TempFigure) && !(*Stop)) {
-        TempFigure.col--;
+      if (CheckRuleA(Table, *TempFigure) && !(*Stop)) {
+        TempFigure->col--;
       }
       break;
     case 'w':
-      if (CheckRuleW(Table, Rotate(TempFigure)) && !(*Stop) &&
-          TempFigure.row >= 0) {
-        TempFigure = Rotate(TempFigure);
+      if (CheckRuleW(Table, Rotate(*TempFigure)) && !(*Stop) &&
+          TempFigure->row >= 0) {
+        *TempFigure = Rotate(*TempFigure);
       }
       break;
     case ' ':
@@ -368,6 +333,15 @@ void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
       *GameOn = FALSE;
       break;
   }
+}
+
+
+void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
+               char Table[ROWS][COLS], int *score, int *Stop, int maxScore) {
+  Figure TempFigure = *CurrentFigure;
+
+  CheckPosition(action, GameOn, CurrentFigure, Table, score, Stop, maxScore, &TempFigure);
+  
   *CurrentFigure = TempFigure;
 
   PrintTable(Table, score, *CurrentFigure, maxScore);
