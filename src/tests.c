@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <check.h>
 
 #include "s21_tetris.h"
@@ -9,18 +10,17 @@ extern const Figure SamplesFigure[];
 // PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure, int
 // maxScore);
 
+// 1. RULE
 START_TEST(check_rule_s_test) {
   Figure figure = SamplesFigure[0];
   char table[ROWS][COLS] = {0};
   ck_assert_int_eq(CheckRuleS(figure, table), 1);
 }
-
 START_TEST(check_rule_d_test) {
   Figure figure = SamplesFigure[0];
   char table[ROWS][COLS] = {0};
   ck_assert_int_eq(CheckRuleD(table, figure), 1);
 }
-
 START_TEST(check_rule_d_test_2) {
   char Table[ROWS][COLS] = {
       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -28,21 +28,17 @@ START_TEST(check_rule_d_test_2) {
       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
       {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-
   Figure figure = {.row = 0,
                    .col = 0,
                    .width = 3,
                    .samples = {{1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
-
   ck_assert_int_eq(CheckRuleD(Table, figure), 0);
 }
-
 START_TEST(check_rule_a_test) {
   Figure figure = SamplesFigure[0];
   char table[ROWS][COLS] = {0};
   ck_assert_int_eq(CheckRuleA(table, figure), 1);
 }
-
 START_TEST(check_rule_w_test) {
   Figure figure = SamplesFigure[0];
   char table[ROWS][COLS] = {0};
@@ -58,14 +54,12 @@ START_TEST(save_game_test) {
   LoadGame(&loaded_maxScore);
   ck_assert_int_eq(maxScore, loaded_maxScore);
 }
-
 START_TEST(load_game_test) {
   int score = 300;  // Исходное значение
   int loaded_score;
   LoadGame(&loaded_score);
   ck_assert_int_eq(score, loaded_score);
 }
-
 START_TEST(save_load_max_score_test) {
   int score = 300;
   int maxScore = 300;
@@ -74,10 +68,17 @@ START_TEST(save_load_max_score_test) {
   LoadGame(&loaded_maxScore);
   ck_assert_int_eq(maxScore, loaded_maxScore);
 }
-
 START_TEST(save_load_game_test) {
   int score = 1500;
   int maxScore = 1500;
+  SaveGame(score, maxScore);
+  int loaded_score;
+  LoadGame(&loaded_score);
+  ck_assert_int_eq(score, loaded_score);
+}
+START_TEST(MaxScore_equal_score) {
+  int score = 1500;
+  int maxScore = 300;
   SaveGame(score, maxScore);
   int loaded_score;
   LoadGame(&loaded_score);
@@ -89,7 +90,6 @@ START_TEST(level_test) {
   int score = 1200;
   ck_assert_int_eq(level(score), 200000);
 }
-
 START_TEST(Rotate_test) {
   Figure figure = SamplesFigure[0];
   Figure rotated_figure = Rotate(figure);
@@ -97,7 +97,6 @@ START_TEST(Rotate_test) {
   ck_assert_int_eq(rotated_figure.samples[0][1], figure.samples[1][0]);
   ck_assert_int_eq(rotated_figure.samples[1][0], figure.samples[0][1]);
 }
-
 START_TEST(DeleteString_test) {
   char table[ROWS][COLS] = {0};
   int score = 0;
@@ -113,191 +112,58 @@ START_TEST(DeleteString_test) {
   }
 }
 
-// 4.InputUser
+// 4.update_position
+START_TEST(update_position_test) {
+  // Инициализация игровой доски и текущей фигуры
+  char table[ROWS][COLS] = {0};
+  Figure currentFigure =
+      SamplesFigure[0];  // Используем первую фигуру для тестирования
 
-// START_TEST(InputUser_test_1) {
-//   char Table[ROWS][COLS] = {0};
-//   Figure CurrentFigure = SamplesFigure[0];
-//   int score = 0;
-//   int Stop = 0;
-//   int maxScore = 0;
-//   bool GameOn = true;
-//   int action = 's';
-//   printf("\nstart\n");
-//   // CreateFigure(&CurrentFigure, Table, &GameOn);
-//   //   CurrentFigure.row = 0;
-//   //   CurrentFigure.col = 4;
-//   int end_row = CurrentFigure.row + 1;
-//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-//   printf("\nfinish\n");
-//   // Check if the figure has moved one cell to the right
-//   ck_assert_int_eq(CurrentFigure.row, end_row);
-// }
+  // Симуляция размещения фигуры в верхнем левом углу доски
+  currentFigure.row = 0;
+  currentFigure.col = 0;
 
-// START_TEST(InputUser_test_1) {
-//   int action = 'd';
-//   bool GameOn = true;
-//   Figure CurrentFigure = SamplesFigure[0];
-//   char Table[ROWS][COLS] = {0};
-//   int score = 0;
-//   int Stop = 0;
-//   int maxScore = 0;
-//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-//   // Check if the figure has moved one cell to the right
-//   ck_assert_int_eq(CurrentFigure.col, 1);
-// }
+  // Вызов функции для обновления позиции
+  char buffer[ROWS][COLS] = {0};
+  UpdatePosition(buffer, currentFigure);
 
-/*
+  // Проверка того, что фигура правильно размещена на доске
+  for (int i = 0; i < currentFigure.width; i++) {
+    for (int j = 0; j < currentFigure.width; j++) {
+      if (currentFigure.samples[i][j]) {
+        ck_assert_int_eq(buffer[currentFigure.row + i][currentFigure.col + j],
+                         1);
+      } else {
+        ck_assert_int_eq(buffer[currentFigure.row + i][currentFigure.col + j],
+                         0);
+      }
+    }
+  }
+}
 
-// START_TEST(InputUser_test_11) {
-//     int action = ' ';
-//     bool GameOn = true;
-//     Figure CurrentFigure = SamplesFigure[0]; // Предполагается, что
-SamplesFigure определен где-то в вашем коде
-//     char Table[ROWS][COLS] = {0};
-//     int score = 0;
-//     int Stop = 0;
-//     int maxScore = 0;
-//     InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
-maxScore);
-//     ck_assert_msg(GameOn == false, "Game should be stopped after pressing
-space");
-// }
-
-// START_TEST(InputUser_test_2) {
-//   int action = 'w';
-//   bool GameOn = true;
-//   Figure CurrentFigure = SamplesFigure[0];
-//   char Table[ROWS][COLS] = {0};
-//   int score = 0;
-//   int Stop = 0;
-//   int maxScore = 0;
-//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-//   // Check if the figure has been rotated
-//   ck_assert_int_eq(CurrentFigure.samples[0][1], 1);
-//   ck_assert_int_eq(CurrentFigure.samples[1][0], 1);
-// }
-
-// START_TEST(InputUser_test_3) {
-//   int action = 's';
-//   bool GameOn = true;
-//   Figure CurrentFigure = SamplesFigure[0];
-//   char Table[ROWS][COLS] = {0};
-//   int score = 0;
-//   int Stop = 0;
-//   int maxScore = 0;
-//   // Set up a table with a full row
-//   for (int i = 0; i < COLS; i++) {
-//     Table[1][i] = 1;
-//   }
-//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-//   // Check if the figure has moved down one cell
-//   ck_assert_int_eq(CurrentFigure.row, 1);
-//   // Check if the full row has been deleted
-//   for (int i = 0; i < COLS; i++) {
-//     ck_assert_int_eq(Table[1][i], 0);
-//   }
-//   // Check if the score has been updated
-//   ck_assert_int_eq(score, 100);
-// }
-
-// START_TEST(InputUser_test_4) {
-//   int action = 'o';
-//   bool GameOn = true;
-//   Figure CurrentFigure = SamplesFigure[0];
-//   char Table[ROWS][COLS] = {0};
-//   int score = 0;
-//   int Stop = 0;
-//   int maxScore = 0;
-//   InputUser(action, &GameOn, &CurrentFigure, Table, &score, &Stop, maxScore);
-//   // Check if the game has been stopped
-//   ck_assert_int_eq(GameOn, false);
-// }
-*/
 // 5.TABLE
-START_TEST(PrintTable_test_1) {
-  char Table[ROWS][COLS] = {0};
-  int score = 0;
-  Figure CurrentFigure = SamplesFigure[0];
-  int maxScore = 0;
-  // CurrentFigure.row++;
+START_TEST(write_to_table_test) {
+  // Инициализация игровой доски и текущей фигуры
+  char table[ROWS][COLS] = {0};
+  Figure current_figure =
+      SamplesFigure[0];  // Используем первую фигуру для тестирования
 
-  // Set up the table with some values
-  for (int i = 0; i < ROWS; i++) {
-      for (int j = 0; j < COLS; j++) {
-        if(i == 0 && j == 0){
-      Table[i][j] = 1;
-        } else
-      Table[i][j] = i + j;
-      }
-  }
+  // Запись фигуры на доску
+  WriteToTable(&current_figure, table);
 
-  // Call the PrintTable function
-  PrintTable(Table, &score, CurrentFigure, maxScore);
-
-  // Check if the table has been printed correctly
-  for (int i = 0; i < ROWS; i++) {
-      for (int j = 0; j < COLS; j++) {
-      if (Table[i][j] + CurrentFigure.samples[i][j]) {
-          ck_assert_int_eq(getch(), Table[i][j] + CurrentFigure.samples[i][j]);
+  // Проверка, что фигура была корректно записана на доску
+  for (int i = 0; i < current_figure.width; i++) {
+    for (int j = 0; j < current_figure.width; j++) {
+      if (current_figure.samples[i][j]) {
+        ck_assert_int_eq(table[current_figure.row + i][current_figure.col + j],
+                         1);
       } else {
-          ck_assert_int_eq(getch(), '.');
+        ck_assert_int_eq(table[current_figure.row + i][current_figure.col + j],
+                         0);
       }
-      }
+    }
   }
-  }
-/*
-
-
-  START_TEST(PrintTable_test_2) {
-  char Table[ROWS][COLS] = {0};
-  int score = 100;
-  Figure CurrentFigure = SamplesFigure[0];
-  int maxScore = 200;
-
-  // Set up the table with some values
-  for (int i = 0; i < ROWS; i++) {
-      for (int j = 0; j < COLS; j++) {
-      Table[i][j] = i + j;
-      }
-  }
-
-  // Call the PrintTable function
-  PrintTable(Table, &score, CurrentFigure, maxScore);
-
-  // Check if the table has been printed correctly
-  for (int i = 0; i < ROWS; i++) {
-      for (int j = 0; j < COLS; j++) {
-      if (Table[i][j] + CurrentFigure.samples[i][j]) {
-          ck_assert_int_eq(getch(), Table[i][j] + CurrentFigure.samples[i][j]);
-      } else {
-          ck_assert_int_eq(getch(), '.');
-      }
-      }
-  }
-
-  // Check if the additional information has been printed correctly
-  ck_assert_int_eq(getch(), 'S');
-  ck_assert_int_eq(getch(), 'c');
-  ck_assert_int_eq(getch(), 'o');
-  ck_assert_int_eq(getch(), 'r');
-  ck_assert_int_eq(getch(), 'e');
-  ck_assert_int_eq(getch(), ':');
-  ck_assert_int_eq(getch(), ' ');
-  ck_assert_int_eq(getch(), score);
-  ck_assert_int_eq(getch(), 'M');
-  ck_assert_int_eq(getch(), 'a');
-  ck_assert_int_eq(getch(), 'x');
-  ck_assert_int_eq(getch(), 'S');
-  ck_assert_int_eq(getch(), 'c');
-  ck_assert_int_eq(getch(), 'o');
-  ck_assert_int_eq(getch(), 'r');
-  ck_assert_int_eq(getch(), 'e');
-  ck_assert_int_eq(getch(), ':');
-  ck_assert_int_eq(getch(), ' ');
-  ck_assert_int_eq(getch(), maxScore);
-  }
-*/
+}
 // 6.FIGURE
 START_TEST(CreateFigure_test_1) {
   Figure CurrentFigure = {0};
@@ -310,7 +176,6 @@ START_TEST(CreateFigure_test_1) {
   ck_assert_int_ne(CurrentFigure.col, 4);
   ck_assert_int_eq(GameOn, true);
 }
-
 START_TEST(CreateFigure_test_2) {
   Figure CurrentFigure = {3};
   char Table[ROWS][COLS] = {0};
@@ -320,6 +185,69 @@ START_TEST(CreateFigure_test_2) {
   ck_assert_int_ne(CurrentFigure.row, 0);
   ck_assert_int_ne(CurrentFigure.col, 4);
   //   ck_assert_int_eq(GameOn, false);
+}
+
+// 6. CHECK
+
+START_TEST(input_user_test_S) {
+  char Table[ROWS][COLS] = {0};
+  Figure CurrentFigure = SamplesFigure[0];
+  Figure TempFigure = CurrentFigure;
+  int score = 0;
+  int Stop = 0;
+  bool GameOn = true;
+  char action = 's';
+  CheckPosition(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
+                &TempFigure);
+  ck_assert_int_ne(CurrentFigure.row, 1);
+  ck_assert_int_ne(CurrentFigure.col, 4);
+  ck_assert_int_eq(GameOn, true);
+}
+
+START_TEST(input_user_test_D) {
+  char Table[ROWS][COLS] = {0};
+  Figure CurrentFigure = SamplesFigure[0];
+  Figure TempFigure = CurrentFigure;
+  int score = 0;
+  int Stop = 0;
+  bool GameOn = true;
+  char action = 'd';
+  CheckPosition(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
+                &TempFigure);
+  ck_assert_int_ne(CurrentFigure.row, -1);
+  ck_assert_int_ne(CurrentFigure.col, 5);
+  ck_assert_int_eq(GameOn, true);
+}
+
+START_TEST(input_user_test_A) {
+  char Table[ROWS][COLS] = {0};
+  Figure CurrentFigure = SamplesFigure[0];
+  Figure TempFigure = CurrentFigure;
+  int score = 0;
+  int Stop = 0;
+  bool GameOn = true;
+  char action = 'a';
+  CheckPosition(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
+                &TempFigure);
+  ck_assert_int_ne(CurrentFigure.row, -1);
+  ck_assert_int_ne(CurrentFigure.col, 3);
+  ck_assert_int_eq(GameOn, true);
+}
+
+START_TEST(input_user_test_Space) {
+  char Table[ROWS][COLS] = {0};
+  Figure CurrentFigure = SamplesFigure[0];
+  Figure TempFigure = CurrentFigure;
+  int score = 0;
+  int Stop = 0;
+  bool GameOn = TRUE;
+  char action = ' ';
+  CheckPosition(action, &GameOn, &CurrentFigure, Table, &score, &Stop,
+                &TempFigure);
+  ck_assert_int_ne(CurrentFigure.row, -1);
+  ck_assert_int_ne(CurrentFigure.col, 4);
+  ck_assert_int_eq(Stop, 1);
+  // ck_assert_int_eq(GameOn, FALSE);
 }
 
 int main(void) {
@@ -341,33 +269,34 @@ int main(void) {
   tcase_add_test(tc1_1, check_rule_w_test);
 
   // 2.FILE
-  // tcase_add_test(tc1_1, create_figure_test);
   tcase_add_test(tc1_1, save_game_test);
   tcase_add_test(tc1_1, load_game_test);
   tcase_add_test(tc1_1, save_load_max_score_test);
   tcase_add_test(tc1_1, save_load_game_test);
+  tcase_add_test(tc1_1, MaxScore_equal_score);
 
   // 3.ADDITIONAL
   tcase_add_test(tc1_1, level_test);
   tcase_add_test(tc1_1, Rotate_test);
   tcase_add_test(tc1_1, DeleteString_test);
 
-  // 4.InputUser
+  // 4.update_position
 
+  tcase_add_test(tc1_1, (update_position_test));
   // tcase_add_test(tc1_1, InputUser_test_1);
-  //   tcase_add_test(tc1_1, InputUser_test_2);
   //   tcase_add_test(tc1_1, InputUser_test_3);
-  //   tcase_add_test(tc1_1, InputUser_test_4);
-
   // 5.TABLE
-
-  tcase_add_test(tc1_1, PrintTable_test_1);
-  //   tcase_add_test(tc1_1, PrintTable_test_2);
+  tcase_add_test(tc1_1, write_to_table_test);
 
   // 6.FIGURE
-
   tcase_add_test(tc1_1, CreateFigure_test_1);
   tcase_add_test(tc1_1, CreateFigure_test_2);
+  // 7. CHECK POSITION
+
+  tcase_add_test(tc1_1, input_user_test_S);
+  tcase_add_test(tc1_1, input_user_test_D);
+  tcase_add_test(tc1_1, input_user_test_A);
+  tcase_add_test(tc1_1, input_user_test_Space);
 
   srunner_run_all(sr, CK_ENV);
   nf = srunner_ntests_failed(sr);

@@ -21,6 +21,8 @@ Figure CaptureFigure(Figure figure);
 int level(int score);
 void LoadGame(int *score);
 void SaveGame(int score, int maxScore);
+void UpdatePosition(char Buffer[ROWS][COLS], Figure CurrentFigure);
+
 void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
                 int maxScore);
 int CheckRuleS(Figure TempFigure, char Table[ROWS][COLS]);
@@ -32,6 +34,9 @@ Figure Rotate(Figure TempFigure);
 void DeleteString(char Table[ROWS][COLS], int *score);  // checks lines
 int isRoof(Figure shape);
 void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn);
+void CheckPosition(int action, bool *GameOn, Figure *CurrentFigure,
+                   char Table[ROWS][COLS], int *score, int *Stop,
+                   Figure *TempFigure);
 void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
                char Table[ROWS][COLS], int *score, int *Stop, int maxScore);
 

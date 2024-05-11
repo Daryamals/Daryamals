@@ -16,6 +16,15 @@ void AdditionalInformation(int score, int maxScore) {
   attroff(COLOR_PAIR(GREEN));
 }
 
+void PrintColor(char Table[ROWS][COLS], char Buffer[ROWS][COLS]) {
+  for (int i = 0; i < ROWS; i++) {
+    for (int j = 0; j < COLS; j++) {
+      (Table[i][j] + Buffer[i][j]) ? color_figure() : printw("%c ", '.');
+    }
+    printw("\n");
+  }
+}
+
 void Pause_not() {
   init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
   attron(COLOR_PAIR(WHITE));

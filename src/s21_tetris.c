@@ -113,67 +113,31 @@ void SaveGame(int score, int maxScore) {
   }
 }
 
-// void PrintBuffer(char buffer[ROWS][COLS], int rows, int cols) {
-//   for (int i = 0; i < rows; i++) {
-//     for (int j = 0; j < cols; j++) {
-//       printw("%c ", buffer[i][j]);
-//     }
-//     printw("\n");
-//   }
-// }
-
-void UpdatePosition( char Buffer[ROWS][COLS], Figure CurrentFigure){
+void UpdatePosition(char Buffer[ROWS][COLS], Figure CurrentFigure) {
   for (int i = 0; i < CurrentFigure.width; i++) {
-      for (int j = 0; j < CurrentFigure.width; j++) {
-        if (CurrentFigure.samples[i][j] && CurrentFigure.row + i < 20 && CurrentFigure.col + j < 10) {
-          Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
-              CurrentFigure.samples[i][j];
-        }
+    for (int j = 0; j < CurrentFigure.width; j++) {
+      if (CurrentFigure.samples[i][j] && CurrentFigure.row + i < 20 &&
+          CurrentFigure.col + j < 10) {
+        Buffer[CurrentFigure.row + i][CurrentFigure.col + j] =
+            CurrentFigure.samples[i][j];
       }
     }
+  }
+  clear();
+  refresh();
 }
 
 void PrintTable(char Table[ROWS][COLS], int *score, Figure CurrentFigure,
                 int maxScore) {
   char Buffer[ROWS][COLS] = {0};
-  // Это для того, чтобы обновлялась позиция фигуры
   UpdatePosition(Buffer, CurrentFigure);
-
-  // for (int i = 0; i < ROWS; i++) {
-  //   for (int j = 0; j < COLS; j++) {
-  //     printf("%c ", (Table[i][j] + Buffer[i][j]) ? '.' : '0');
-  //   }
-  //   printf("\n");
-  // }
-
-  clear();
-  refresh();
-  // printf("\n0\n");
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
-      // printf("CurrentFigure.row: %d\n", CurrentFigure.row);
-
-      printw("%c ", (Table[i][j] + Buffer[i][j]) ? '.' : '0');
-      // (Table[i][j] + Buffer[i][j]) ? color_figure() : printw("%c ", '.');
-      // printf("\n1\n");
-      /////////////////////////////Здесь ошибка памяти возникает
-    }
-    printw("\n");
-  }
-
-    // printf("0\n");
+  PrintColor(Table, Buffer);
   AdditionalInformation(*score, maxScore);
-
   refresh();
 }
 
-
 int CheckRuleS(Figure TempFigure, char Table[ROWS][COLS]) {
   int flag = 1;  // okv
-
-  // if (TempFigure.row > ROWS - 1) {
-  //   flag = 0;
-  // }
   for (int i = 0; i < TempFigure.width; i++) {
     for (int j = 0; j < TempFigure.width; j++) {
       if (Table[TempFigure.row + i + 1][TempFigure.col + j] &&
@@ -199,11 +163,8 @@ int CheckRuleD(char Table[ROWS][COLS], Figure figure) {
 }
 int CheckRuleA(char Table[ROWS][COLS], Figure figure) {
   int flag = 1;  // ok
-
-  // figure.col + figure.width > COLS || figure.row + figure.height > ROWS
   for (int i = 0; i < figure.width; i++) {
     for (int j = 0; j < figure.width; j++) {
-      // if (figure.col + j <= 0 || figure.row + 1 > ROWS - 1) {
       if (figure.col + j <= 0 || figure.col + j - 1 >= COLS ||
           figure.row + i >= ROWS) {
         if (figure.samples[i][j]) flag = 0;
@@ -251,7 +212,7 @@ Figure Rotate(Figure TempFigure) {
 }
 
 void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
-  int sum, count = 0;
+  int sum, count = 0, temp_score = 0;
   for (int i = 0; i < ROWS; i++) {
     sum = 0;
     for (int j = 0; j < COLS; j++) {
@@ -265,9 +226,13 @@ void DeleteString(char Table[ROWS][COLS], int *score) {  // checks lines
         for (int l = 0; l < COLS; l++) Table[k][l] = Table[k - 1][l];
 
       for (int l = 0; l < COLS; l++) Table[k][l] = 0;
-      (*score) += 100 * count;
+      while (count) {
+        temp_score = temp_score * 2 + 100;
+        count--;
+      }
     }
   }
+  (*score) = (*score) + temp_score;
 }
 
 int isRoof(Figure shape) {
@@ -295,7 +260,8 @@ void CreateFigure(Figure *CurrentFigure, char Table[ROWS][COLS], bool *GameOn) {
 }
 
 void CheckPosition(int action, bool *GameOn, Figure *CurrentFigure,
-               char Table[ROWS][COLS], int *score, int *Stop, int maxScore, Figure *TempFigure){
+                   char Table[ROWS][COLS], int *score, int *Stop,
+                   Figure *TempFigure) {
   switch (action) {
     case 's':
       if (!(*Stop)) {
@@ -335,18 +301,12 @@ void CheckPosition(int action, bool *GameOn, Figure *CurrentFigure,
   }
 }
 
-
 void InputUser(int action, bool *GameOn, Figure *CurrentFigure,
                char Table[ROWS][COLS], int *score, int *Stop, int maxScore) {
   Figure TempFigure = *CurrentFigure;
-
-  CheckPosition(action, GameOn, CurrentFigure, Table, score, Stop, maxScore, &TempFigure);
-  
+  CheckPosition(action, GameOn, CurrentFigure, Table, score, Stop, &TempFigure);
   *CurrentFigure = TempFigure;
-
   PrintTable(Table, score, *CurrentFigure, maxScore);
-  // printf("\n4\n");
-  // refresh();
 }
 
 int level(int score) {
