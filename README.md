@@ -18,6 +18,12 @@
 ![Git](https://img.shields.io/badge/GIT-E44C30?style=for-the-badge&logo=git&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
+---
+
+### ❗️ Текущий статус профиля на GitHub
+
+На данный момент я работаю над оформлением профиля, поэтому в нем расположены черновые и учебные проекты без должного оформления. Прошу это взять во внимание при просмотре 🙃
+
 ### 📫 Как со мной связаться
 
 - **Email:** [daryamals@mail.ru]
